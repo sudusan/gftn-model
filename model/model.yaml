@@ -1,0 +1,114 @@
+swagger: "2.0"
+info:
+  title: GFTN Model Definitions
+  description: definition of all the model objects
+  version: 1.0.0
+paths:
+  /dummy/:
+    get:
+      tags:
+        - Dummy API
+      summary: This is a dummy API
+      description: Dummy API
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Found a valid quote for the target currency, priced in the source currency
+        404:
+          description: There is no valid quote for the target currency priced in the source currency
+definitions:
+  CurrencyPriceQuoteResponse:
+    type: object
+    description: contains an array of quote response from each quote provider
+    properties:
+      currency_price_quotes:
+        type: array
+        items:
+          $ref: "#/definitions/CurrencyPriceQuote"
+  CurrencyPriceQuote:
+      type: object
+      required:
+        - quote_id
+        - source_currency
+        - target_currency
+        - price
+        - start_time
+        - expiration_time
+      properties:
+        quote_id:
+          type: string
+          description: globally unique id for this quote
+        stellar_address:
+          type: string
+          description: stellar address for this quote provider
+        source_currency:
+          type: string
+          description: The source currency used for pricing this quote
+        target_currency:
+          type: string
+          description: The currency being purchased or exchanged using the source_currency
+        price:
+          type: number
+          format: float
+          description: The source-currency price of the target currency
+        start_time:
+          type: string
+          format: date-time
+          description: start time for this quote to be valid
+        expiration_time:
+          type: string
+          format: date-time
+          description: end-time for this quote to be valid
+        limit:
+          type: integer
+          description: maximum units for which this quote is valid
+  ParticipantResponse:
+    type: object
+    required:
+      - participants
+    properties:
+      participants:
+        type: array
+        items:
+          $ref: "#/definitions/Participant"
+        description: collection of participants
+  Participant:
+    type: object
+    required:
+      - stellar_domain
+      - stellar_address
+    properties:
+      stellar_domain:
+        type: string
+        description: the stellar domain for the participant
+      stellar_address:
+        type: string
+        description: the stellar address for the participant
+      federation_service_url:
+        type: string
+        description: the api endpoint for federation service
+      compliance_service_url:
+        type: string
+        description: the api endpoint for compliance service
+      quote_service_url:
+        type: string
+        description: the api endpoint for providing quotes
+      quote_currency_set:
+        type: array
+        items:
+          $ref: '#/definitions/CurrencyPair'
+        description: collection of currency pairs
+  CurrencyPair:
+    description: the currency pair for which the participan can provide a quot
+    type: object
+    required:
+      - source_currency
+      - target_currency
+    properties:
+      source_currency:
+        type: string
+        description: the source currency
+      target_currency:
+        type: string
+        description: the target currency
